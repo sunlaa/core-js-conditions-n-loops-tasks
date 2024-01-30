@@ -404,50 +404,33 @@ function sortByAsc(arr) {
     return arr;
   }
 
-  const halfIndex = Math.floor(arr.length / 2);
-  const leftArr = [];
-  const rightArr = [];
+  const pivotIndex = Math.floor(arr.length / 2);
+  const left = [];
+  const right = [];
+  let countL = 0;
+  let countR = 0;
 
-  for (let i = 0; i < halfIndex; i += 1) {
-    leftArr[i] = arr[i];
-  }
-  let counter = 0;
-  for (let i = halfIndex; i < arr.length; i += 1) {
-    rightArr[counter] = arr[i];
-    counter += 1;
-  }
-
-  const merge = (arr1, arr2) => {
-    const left = arr1;
-    const right = arr2;
-    const sorted = [];
-    let count = 0;
-    while (left.length && right.length) {
-      if (left[0] < right[0]) {
-        [sorted[count]] = left;
-        count += 1;
-        for (let i = 0; i < left.length - 1; i += 1) {
-          left[i] = left[i + 1];
-        }
-        left.length -= 1;
+  for (let i = 0; i < arr.length; i += 1) {
+    if (i !== pivotIndex) {
+      if (arr[i] < arr[pivotIndex]) {
+        left[countL] = arr[i];
+        countL += 1;
       } else {
-        [sorted[count]] = right;
-        count += 1;
-        for (let i = 0; i < right.length - 1; i += 1) {
-          right[i] = right[i + 1];
-        }
-        right.length -= 1;
+        right[countR] = arr[i];
+        countR += 1;
       }
     }
-    return [...sorted, ...left, ...right];
-  };
+  }
 
-  const result = merge(sortByAsc(leftArr), sortByAsc(rightArr));
-  temp.length = 0;
+  const l = sortByAsc(left);
+  const r = sortByAsc(right);
+  const result = [...l, arr[pivotIndex], ...r];
+
   for (let i = 0; i < result.length; i += 1) {
     temp[i] = result[i];
   }
-  return arr;
+
+  return temp;
 }
 
 /**
@@ -470,7 +453,8 @@ function sortByAsc(arr) {
 function shuffleChar(str, iterations) {
   let count = 0;
   let compare = str;
-  do {
+
+  function shuffle() {
     let start = '';
     let end = '';
     for (let i = 0; i < str.length; i += 1) {
@@ -481,13 +465,19 @@ function shuffleChar(str, iterations) {
       }
     }
     compare = start + end;
+  }
+  do {
+    shuffle();
     count += 1;
   } while (compare !== str);
 
-  if (iterations === count) {
-    return count;
+  const minIteration = iterations % count;
+  compare = str;
+  for (let i = 0; i < minIteration; i += 1) {
+    shuffle();
   }
-  return 4;
+
+  return compare;
 }
 
 /**
